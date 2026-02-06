@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 responses = {
     "yes": ["Yayyy! 💖 You said YES!", "Happy Valentine’s Day ❤️", "Let’s celebrate together! 🎉"],
-    "no": ["Please think again 🥺","Are you Sure 🥺",U+1F494],
+    "no": ["Please think again 🥺","Are you Sure 🥺","\U0001F494"],
     "default": ["Type yes or no 😄"]
 }
 
