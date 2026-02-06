@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Valentine Bot 💖</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#ffdde1,#ee9ca7);
+    overflow:hidden;
+    text-align:center;
+}
+
+/* Chat box */
+.chatbox{
+    position:relative;
+    z-index:50;
+    margin-top:80px;
+}
+
+input{
+    padding:12px 18px;
+    width:220px;
+    border-radius:12px;
+    border:none;
+}
+
+button{
+    padding:12px 18px;
+    border-radius:12px;
+    border:none;
+    background:crimson;
+    color:white;
+    cursor:pointer;
+}
+
+#reply{
+    margin-top:20px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* ❤️ Floating hearts */
+.heart{
+    position:fixed;
+    bottom:-20px;
+    animation:floatUp 6s linear forwards;
+    color:red;
+    z-index:1;
+}
+
+@keyframes floatUp{
+    to{ transform:translateY(-100vh); opacity:0; }
+}
+
+/* 🎉 Confetti */
+.confetti{
+    position:fixed;
+    width:8px;
+    height:8px;
+    animation:fall 3s linear forwards;
+    z-index:30;
+}
+
+@keyframes fall{
+    to{ transform:translateY(110vh) rotate(720deg); opacity:0; }
+}
+
+/* 💥 Heart burst */
+.burst{
+    position:fixed;
+    font-size:22px;
+    animation:explode 1.2s ease-out forwards;
+    z-index:40;
+}
+
+@keyframes explode{
+    to{
+        transform:translate(var(--x), var(--y)) scale(0.3);
+        opacity:0;
+    }
+}
+
+/* 💖 Celebration text */
+.celebrate-text{
+    position:fixed;
+    top:40%;
+    width:100%;
+    font-size:40px;
+    font-weight:bold;
+    color:white;
+    text-shadow:0 0 20px red;
+    animation:pop 0.9s ease;
+    z-index:60;
+}
+
+@keyframes pop{
+    0%{transform:scale(0);}
+    60%{transform:scale(1.3);}
+    100%{transform:scale(1);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 Music -->
+<audio id="bgmusic" loop>
+    <source src="{{ url_for('static', filename='love.mp3') }}">
+</audio>
+
+<div class="chatbox">
+<h2>💘 Valentine Chatbot 💘</h2>
+<input id="msg" placeholder="Type yes or no">
+<button onclick="send()">Send</button>
+<p id="reply"></p>
+</div>
+
+<script>
+
+/* SEND MESSAGE */
+function send(){
+    let message=document.getElementById("msg").value;
+
+    fetch("/chat",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({message:message})
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        document.getElementById("reply").innerText=data.reply;
+
+        if(message.toLowerCase().includes("yes")){
+            celebrate();
+
+            const music=document.getElementById("bgmusic");
+            music.play().catch(()=>{}); // autoplay fix
+        }
+    });
+}
+
+/* FLOATING HEARTS */
+function createHeart(){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerHTML="❤";
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize=(Math.random()*20+10)+"px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),6000);
+}
+setInterval(createHeart,200);
+
+
+/* 🎉 CELEBRATION */
+function celebrate(){
+
+    const text=document.createElement("div");
+    text.className="celebrate-text";
+    text.innerHTML=" I love you more than I did yesterday, but not as much as tomorrow 💘 ";
+    document.body.appendChild(text);
+    setTimeout(()=>text.remove(),5000);
+
+    /* confetti */
+    for(let i=0;i<100;i++){
+        const c=document.createElement("div");
+        c.className="confetti";
+        c.style.background=["red","pink","white"][Math.floor(Math.random()*3)];
+        c.style.left=Math.random()*100+"vw";
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),3000);
+    }
+
+    /* heart burst */
+    for(let i=0;i<40;i++){
+        const b=document.createElement("div");
+        b.className="burst";
+        b.innerHTML="❤";
+
+        let angle=Math.random()*360;
+        let distance=250;
+
+        b.style.setProperty("--x",Math.cos(angle*Math.PI/180)*distance+"px");
+        b.style.setProperty("--y",Math.sin(angle*Math.PI/180)*distance+"px");
+
+        b.style.left="50%";
+        b.style.top="50%";
+
+        document.body.appendChild(b);
+        setTimeout(()=>b.remove(),1200);
+    }
+}
+
+</script>
+
+</body>
+</html>
